@@ -1,0 +1,80 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'app.javaJostle'
+version = '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+application {
+    mainClass = 'app.background.App'
+}
+
+// Task to compile robot files automatically
+task compileRobots {
+    description = "Compile all classes that extend the Robot class"
+    
+    doLast {
+        File sourceDir = file('src/main/java/app/robots')
+        File outputDir = file('src/main/resources/robots')
+        File testRobotDir = file('src/main/resources/robots/app/robots/Test Robots')
+
+        outputDir.mkdirs()
+        testRobotDir.mkdirs()
+
+        // Find all Java files that extend Robot
+        List<File> robotSources = sourceDir.listFiles()
+            .findAll { it.isFile() && it.name.endsWith('.java') }
+            .findAll { it.text.matches('(?s).*public\\s+class\\s+\\w+\\s+extends\\s+Robot.*') }
+
+        if (robotSources.isEmpty()) {
+            println "No classes extending Robot found to compile."
+            return
+        }
+
+        println "Found robot classes to compile: ${robotSources.collect { it.name[0..-6] }}"
+
+        def compiler = javax.tools.ToolProvider.getSystemJavaCompiler()
+        if (compiler == null) {
+            throw new RuntimeException('No system Java compiler found. Make sure Gradle runs with a JDK, not a JRE.')
+        }
+
+        File sourceRoot = file('src/main/java')
+
+        List<String> compileArgs = [
+            '-d', outputDir.absolutePath,
+            '-cp', sourceRoot.absolutePath,
+            '-sourcepath', sourceRoot.absolutePath,
+            '--release', '17',
+            '-implicit:none'
+        ] + robotSources.collect { it.absolutePath }
+
+        int result = compiler.run(null, null, null, *compileArgs)
+        if (result != 0) {
+            throw new RuntimeException("Robot compilation failed with exit code ${result}")
+        }
+
+        fileTree(outputDir).matching {
+            include 'app/robots/Level_*.class'
+        }.files.each { File classFile ->
+            File targetFile = new File(testRobotDir, classFile.name)
+            java.nio.file.Files.move(
+                classFile.toPath(),
+                targetFile.toPath(),
+                java.nio.file.StandardCopyOption.REPLACE_EXISTING
+            )
+            println "Moved test robot class to ${targetFile.absolutePath}"
+        }
+
+        println "Robot compilation complete. Output directory: ${outputDir.absolutePath}"
+    }
+}

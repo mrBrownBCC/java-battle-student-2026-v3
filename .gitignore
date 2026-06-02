@@ -1,0 +1,43 @@
+# Gradle build/IDE/OS artifacts
+/.gradle/
+/build/
+/out/
+/bin/
+/tmp/
+/.idea/
+*.iml
+
+# IntelliJ
+/.idea/
+/*.iws
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Logs and temporary files
+*.log
+logs/
+
+# Compiled class files (keep any .class intentionally stored in src/main/resources)
+*.class
+!src/main/resources/**/*.class
+
+# Runtime files
+*.pid
+*.seed
+
+# Misc
+node_modules/
+npm-debug.log*
+
+# OS-generated files
+ehthumbs.db
+Icon?
