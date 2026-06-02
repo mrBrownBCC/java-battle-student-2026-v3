@@ -64,15 +64,15 @@ Grading is different for this project. As you reach different milestones, call M
 
 50% - code compiles
 
-60% - beat level 2
+60% - beat level 1
 
-70% - beat level 3
+70% - beat level 2
 
-80% - beat level 4
+80% - beat level 3
 
-90% - beat level 5
+90% - beat level 4
 
-100% - beat level 6
+100% - beat level 5
 
 ### Competition Submission
 To submit your code for the competition, you must submit by June 15 at 10:30AM (so Mr. Brown can set up the tournament on the 15th after class).
